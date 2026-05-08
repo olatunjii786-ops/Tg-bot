@@ -38,7 +38,7 @@ def run_flask():
 
 # --- API LOGIC ---
 def call_api(region, uid):
-    url = f"http://druu-likes-15-day.vercel.app/like?uid={uid}&server_name={region}"
+    url = f"https://ghi-five.vercel.app/like?uid={uid}&server_name={region}&key=STAR"
     try:
         response = requests.get(url, timeout=15)
         return response.json() if response.status_code == 200 else "API_ERROR"
@@ -46,7 +46,7 @@ def call_api(region, uid):
         return "API_ERROR"
 
 # --- CORE PROCESSING ---
-def process_like(message, region, uid, is_auto=False, user_id_override=None):
+def process_like(message, uid, region, is_auto=False, user_id_override=None):
     chat_id = message.chat.id if message else ALLOWED_GROUP_ID
     user_id = str(user_id_override) if user_id_override else str(message.from_user.id)
 
@@ -61,7 +61,7 @@ def process_like(message, region, uid, is_auto=False, user_id_override=None):
     if not is_auto and message:
         processing_msg = bot.reply_to(message, "⏳ Processing your request...")
 
-    response = call_api(region, uid)
+    response = call_api(uid, region)
 
     if response == "API_ERROR":
         if not is_auto and processing_msg:
@@ -129,7 +129,7 @@ def handle_like(message):
     if len(args) == 3:
         threading.Thread(target=process_like, args=(message, args[1], args[2])).start()
     else:
-        bot.reply_to(message, "❌ Use: `/like ind 12345`", parse_mode="Markdown")
+        bot.reply_to(message, "❌ Use: `/like 12345 ind`", parse_mode="Markdown")
 
 @bot.message_handler(commands=['autolike'])
 def handle_autolike(message):
